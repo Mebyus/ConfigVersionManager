@@ -6,11 +6,39 @@ import (
 	"strings"
 )
 
+func findLine(lines []string, searchStr string) int32 {
+	for i, line := range lines {
+		if strings.HasPrefix(line, searchStr+" =") {
+			return int32(i)
+		}
+	}
+	return -1
+}
+
+func stringToLines(str string) []string {
+	lines := strings.Split(str, "\n")
+
+	for i, line := range lines {
+		lines[i] = strings.Trim(line, " \r")
+	}
+	return lines
+}
+
+func substituteLine(linesPtr *[]string, searchStr, target string) {
+	lines := *linesPtr
+
+	index := findLine(lines, searchStr)
+	if index != -1 {
+		lines[index] = target
+	}
+}
+
 func readFileToString(filepath string) (string, error) {
 	var (
 		result    string
 		filebytes []byte
 	)
+
 	file, err := os.Open(filepath)
 	if err != nil {
 		fmt.Println("Unable to read local config file: ", err)
@@ -42,19 +70,31 @@ func readFileToString(filepath string) (string, error) {
 
 func main() {
 	var (
-		keeppath string
-		confpath string
+		keeppath  string
+		confpath  string
+		localpath string
 	)
 
-	keeppath = "./app.conf.local"
+	keeppath = "./app.conf.keep"
 	confpath = "./app.conf"
+	localpath = "./app.conf.local"
 
 	keepstr, _ := readFileToString(keeppath)
 	confstr, _ := readFileToString(confpath)
+	localstr, _ := readFileToString(localpath)
 
-	fmt.Println(keepstr)
+	confLines := stringToLines(confstr)
+	localLines := stringToLines(localstr)
+	keepLines := stringToLines(keepstr)
 
-	for n, s := range strings.Split(confstr, "\n") {
-		fmt.Println(n, s)
+	for _, line := range keepLines {
+		index := findLine(localLines, line)
+		if index != -1 {
+			substituteLine(&confLines, line, localLines[index])
+		}
+	}
+
+	for i, line := range confLines {
+		fmt.Println(i, line)
 	}
 }
