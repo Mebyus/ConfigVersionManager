@@ -1,0 +1,4 @@
+stream.db.spec = 192.168.77.119:9025?sslmode=true
+another.field = another.setting
+and.even.more = "Keep it quiet"
+my_field2 = 'tadem'
