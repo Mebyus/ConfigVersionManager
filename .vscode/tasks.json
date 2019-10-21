@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",	
+	"type": "shell",	
+	"echoCommand": true,
+	"cwd": "${workspaceFolder}",
+	"tasks": [
+		{
+			"label": "simple build",
+			"command": "go build -o ./bin/cvm.exe ./source/main",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},		
+	]
+}
