@@ -9,9 +9,24 @@ type Param struct {
 	Value string
 }
 
+/**
+Refactor Params using map
+*/
 type Command struct {
 	Name   string
 	Params []*Param
+}
+
+func (command *Command) Extract(name string) (value string, ok bool) {
+	for _, param := range command.Params {
+		if param.Name == name {
+			value = param.Value
+			ok = true
+			return
+		}
+	}
+
+	return
 }
 
 func parseParams(args []string, prefix string) []*Param {

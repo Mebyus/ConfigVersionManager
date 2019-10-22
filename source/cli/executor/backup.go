@@ -43,14 +43,17 @@ func (executor *BackupExecutor) Execute() trace.ITrace {
 		if etrace.SafetyLevel() < log.WARN {
 			return etrace
 		}
-		// logger.Log(etrace.String(), etrace.SafetyLevel())
+		executor.logger.LogTrace(etrace)
 	}
 
 	writer := filework.NewFileWriter(executor.etraceFactory)
 	writer.Save(backpath, filebytes)
 	if etrace != nil {
 		etrace.Add("Tried to save backup file")
-		return etrace
+		if etrace.SafetyLevel() < log.WARN {
+			return etrace
+		}
+		executor.logger.LogTrace(etrace)
 	}
 
 	return nil

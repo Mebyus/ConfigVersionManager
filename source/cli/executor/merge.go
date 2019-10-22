@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"../../filework"
+	"../../log"
 	"../../trace"
 )
 
@@ -35,22 +36,28 @@ func (executor *MergeExecutor) Execute() trace.ITrace {
 	keepstr, etrace := reader.ReadString(keeppath)
 	if etrace != nil {
 		etrace.Add("Something went wrong while reading list of local settings")
-		// logger.Log(etrace.String(), etrace.SafetyLevel())
-		return etrace
+		if etrace.SafetyLevel() < log.WARN {
+			return etrace
+		}
+		executor.logger.LogTrace(etrace)
 	}
 
 	confstr, etrace := reader.ReadString(confpath)
 	if etrace != nil {
 		etrace.Add("Something went wrong while reading distributed config file")
-		// logger.Log(etrace.String(), etrace.SafetyLevel())
-		return etrace
+		if etrace.SafetyLevel() < log.WARN {
+			return etrace
+		}
+		executor.logger.LogTrace(etrace)
 	}
 
 	localstr, etrace := reader.ReadString(localpath)
 	if etrace != nil {
 		etrace.Add("Something went wrong while reading local config file")
-		// logger.Log(etrace.String(), etrace.SafetyLevel())
-		return etrace
+		if etrace.SafetyLevel() < log.WARN {
+			return etrace
+		}
+		executor.logger.LogTrace(etrace)
 	}
 
 	confLines := stringToLines(confstr)
@@ -67,8 +74,10 @@ func (executor *MergeExecutor) Execute() trace.ITrace {
 	etrace = writer.SaveLines(mergepath, confLines)
 	if etrace != nil {
 		etrace.Add("Something went wrong while saving merged config file")
-		// logger.Log(etrace.String(), etrace.SafetyLevel())
-		return etrace
+		if etrace.SafetyLevel() < log.WARN {
+			return etrace
+		}
+		executor.logger.LogTrace(etrace)
 	}
 
 	return nil

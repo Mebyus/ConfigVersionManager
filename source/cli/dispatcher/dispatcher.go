@@ -11,8 +11,8 @@ import (
 
 type Dispatcher struct {
 	pool          []executor.IExecutor
-	logger        log.ILogger
 	etraceFactory trace.IErrorTraceFactory
+	logger        log.ILogger
 }
 
 func NewDispatcher(logger log.ILogger, factory trace.IErrorTraceFactory) *Dispatcher {
@@ -29,7 +29,22 @@ Dispatch method.
 */
 func (dispatcher *Dispatcher) Register(executor executor.IExecutor) {
 	executor.ChangeEtraceFactory(dispatcher.etraceFactory)
+	executor.ChangeLogger(dispatcher.logger)
 	dispatcher.pool = append(dispatcher.pool, executor)
+}
+
+func (dispatcher *Dispatcher) ChangeEtraceFactory(etraceFactory trace.IErrorTraceFactory) {
+	dispatcher.etraceFactory = etraceFactory
+	for _, executor := range dispatcher.pool {
+		executor.ChangeEtraceFactory(etraceFactory)
+	}
+}
+
+func (dispatcher *Dispatcher) ChangeLogger(logger log.ILogger) {
+	dispatcher.logger = logger
+	for _, executor := range dispatcher.pool {
+		executor.ChangeLogger(logger)
+	}
 }
 
 func (dispatcher *Dispatcher) Dispatch(command *command.Command) {
