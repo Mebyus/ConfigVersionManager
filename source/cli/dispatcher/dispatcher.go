@@ -6,18 +6,17 @@ import (
 	"../../log"
 	"../../trace"
 	"../command"
-	"../executor"
 )
 
 type Dispatcher struct {
-	pool          []executor.IExecutor
+	pool          []IExecutor
 	etraceFactory trace.IErrorTraceFactory
 	logger        log.ILogger
 }
 
 func NewDispatcher(logger log.ILogger, factory trace.IErrorTraceFactory) *Dispatcher {
 	return &Dispatcher{
-		pool:          make([]executor.IExecutor, 0),
+		pool:          make([]IExecutor, 0),
 		logger:        logger,
 		etraceFactory: factory,
 	}
@@ -27,9 +26,10 @@ func NewDispatcher(logger log.ILogger, factory trace.IErrorTraceFactory) *Dispat
 Registers an executor in the dispatcher. So it becomes available for search in
 Dispatch method.
 */
-func (dispatcher *Dispatcher) Register(executor executor.IExecutor) {
+func (dispatcher *Dispatcher) Register(executor IExecutor) {
 	executor.ChangeEtraceFactory(dispatcher.etraceFactory)
 	executor.ChangeLogger(dispatcher.logger)
+	executor.BecomeSlave(dispatcher)
 	dispatcher.pool = append(dispatcher.pool, executor)
 }
 
@@ -81,7 +81,7 @@ func (dispatcher *Dispatcher) Dispatch(command *command.Command) {
 	return
 }
 
-func (dispatcher *Dispatcher) search(name string) executor.IExecutor {
+func (dispatcher *Dispatcher) search(name string) IExecutor {
 	for _, executor := range dispatcher.pool {
 		if executor.Match(name) {
 			return executor

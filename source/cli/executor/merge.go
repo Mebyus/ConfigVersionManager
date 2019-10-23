@@ -6,16 +6,17 @@ import (
 	"../../filework"
 	"../../log"
 	"../../trace"
+	"../dispatcher"
 )
 
 type MergeExecutor struct {
-	Executor
+	dispatcher.Executor
 }
 
 func NewMergeExecutor() *MergeExecutor {
 	return &MergeExecutor{
-		Executor{
-			name: "merge",
+		dispatcher.Executor{
+			Name: "merge",
 		},
 	}
 }
@@ -25,8 +26,8 @@ func (executor *MergeExecutor) Validate() trace.ITrace {
 }
 
 func (executor *MergeExecutor) Execute() trace.ITrace {
-	reader := filework.NewFileReader(executor.etraceFactory)
-	writer := filework.NewFileWriter(executor.etraceFactory)
+	reader := filework.NewFileReader(executor.EtraceFactory)
+	writer := filework.NewFileWriter(executor.EtraceFactory)
 
 	keeppath := "./app.conf.keep"
 	confpath := "./app.conf"
@@ -39,7 +40,7 @@ func (executor *MergeExecutor) Execute() trace.ITrace {
 		if etrace.SafetyLevel() < log.WARN {
 			return etrace
 		}
-		executor.logger.LogTrace(etrace)
+		executor.Logger.LogTrace(etrace)
 	}
 
 	confstr, etrace := reader.ReadString(confpath)
@@ -48,7 +49,7 @@ func (executor *MergeExecutor) Execute() trace.ITrace {
 		if etrace.SafetyLevel() < log.WARN {
 			return etrace
 		}
-		executor.logger.LogTrace(etrace)
+		executor.Logger.LogTrace(etrace)
 	}
 
 	localstr, etrace := reader.ReadString(localpath)
@@ -57,7 +58,7 @@ func (executor *MergeExecutor) Execute() trace.ITrace {
 		if etrace.SafetyLevel() < log.WARN {
 			return etrace
 		}
-		executor.logger.LogTrace(etrace)
+		executor.Logger.LogTrace(etrace)
 	}
 
 	confLines := stringToLines(confstr)
@@ -77,7 +78,7 @@ func (executor *MergeExecutor) Execute() trace.ITrace {
 		if etrace.SafetyLevel() < log.WARN {
 			return etrace
 		}
-		executor.logger.LogTrace(etrace)
+		executor.Logger.LogTrace(etrace)
 	}
 
 	return nil

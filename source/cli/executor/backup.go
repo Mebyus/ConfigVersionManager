@@ -6,16 +6,17 @@ import (
 	"../../filework"
 	"../../log"
 	"../../trace"
+	"../dispatcher"
 )
 
 type BackupExecutor struct {
-	Executor
+	dispatcher.Executor
 }
 
 func NewBackupExecutor() *BackupExecutor {
 	return &BackupExecutor{
-		Executor{
-			name: "backup",
+		dispatcher.Executor{
+			Name: "backup",
 		},
 	}
 }
@@ -29,13 +30,17 @@ func (executor *BackupExecutor) Execute() trace.ITrace {
 	backpath := "./backup/app.conf"
 	backdir := "./backup"
 
+	if newpath, ok := executor.Command.Extract("f"); ok {
+		filepath = newpath
+	}
+
 	if err := os.MkdirAll(backdir, os.ModeDir); err != nil {
-		etrace := executor.etraceFactory.CreateTrace(err, log.ERROR)
+		etrace := executor.EtraceFactory.CreateTrace(err, log.ERROR)
 		etrace.Add("Tried to create directory")
 		return etrace
 	}
 
-	reader := filework.NewFileReader(executor.etraceFactory)
+	reader := filework.NewFileReader(executor.EtraceFactory)
 
 	filebytes, etrace := reader.Read(filepath)
 	if etrace != nil {
@@ -43,17 +48,17 @@ func (executor *BackupExecutor) Execute() trace.ITrace {
 		if etrace.SafetyLevel() < log.WARN {
 			return etrace
 		}
-		executor.logger.LogTrace(etrace)
+		executor.Logger.LogTrace(etrace)
 	}
 
-	writer := filework.NewFileWriter(executor.etraceFactory)
+	writer := filework.NewFileWriter(executor.EtraceFactory)
 	writer.Save(backpath, filebytes)
 	if etrace != nil {
 		etrace.Add("Tried to save backup file")
 		if etrace.SafetyLevel() < log.WARN {
 			return etrace
 		}
-		executor.logger.LogTrace(etrace)
+		executor.Logger.LogTrace(etrace)
 	}
 
 	return nil

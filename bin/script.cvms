@@ -1,0 +1,3 @@
+debug
+backup -f ./pp.conf
+merge -f ./p.conf

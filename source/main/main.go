@@ -15,11 +15,13 @@ func main() {
 		Level:   log.INFO,
 		InfoOut: os.Stdout,
 	}
-	errorTraceFactory := trace.NewErrorTraceFactory("detailed")
+	errorTraceFactory := trace.NewErrorTraceFactory("simple")
 	dispatcher := dispatcher.NewDispatcher(logger, errorTraceFactory)
 	command := command.ParseArgs(os.Args, "-")
 
 	dispatcher.Register(executor.NewBackupExecutor())
 	dispatcher.Register(executor.NewMergeExecutor())
+	dispatcher.Register(executor.NewScriptExecutor())
+	dispatcher.Register(executor.NewDebugExecutor())
 	dispatcher.Dispatch(command)
 }

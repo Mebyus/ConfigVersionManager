@@ -1,4 +1,4 @@
-package executor
+package dispatcher
 
 import (
 	"../../log"
@@ -8,6 +8,7 @@ import (
 
 type IExecutor interface {
 	Match(name string) bool
+	BecomeSlave(boss *Dispatcher)
 	Load(command *command.Command)
 	Validate() trace.ITrace
 	Execute() trace.ITrace
@@ -16,24 +17,29 @@ type IExecutor interface {
 }
 
 type Executor struct {
-	name          string
-	command       *command.Command
-	etraceFactory trace.IErrorTraceFactory
-	logger        log.ILogger
+	Boss          *Dispatcher
+	Name          string
+	Command       *command.Command
+	EtraceFactory trace.IErrorTraceFactory
+	Logger        log.ILogger
 }
 
 func (executor *Executor) Match(name string) bool {
-	return executor.name == name
+	return executor.Name == name
+}
+
+func (executor *Executor) BecomeSlave(boss *Dispatcher) {
+	executor.Boss = boss
 }
 
 func (executor *Executor) Load(command *command.Command) {
-	executor.command = command
+	executor.Command = command
 }
 
 func (executor *Executor) ChangeEtraceFactory(factory trace.IErrorTraceFactory) {
-	executor.etraceFactory = factory
+	executor.EtraceFactory = factory
 }
 
 func (executor *Executor) ChangeLogger(logger log.ILogger) {
-	executor.logger = logger
+	executor.Logger = logger
 }
