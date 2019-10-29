@@ -17,6 +17,10 @@ func NewDebugExecutor() *DebugExecutor {
 	}
 }
 
+func (executor *DebugExecutor) ShortHelp() string {
+	return "short help for " + executor.Name + " command"
+}
+
 func (executor *DebugExecutor) Validate() trace.ITrace {
 	return nil
 }

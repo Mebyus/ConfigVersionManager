@@ -22,6 +22,10 @@ func NewScriptExecutor() *ScriptExecutor {
 	}
 }
 
+func (executor *ScriptExecutor) ShortHelp() string {
+	return "short help for " + executor.Name + " command"
+}
+
 func (executor *ScriptExecutor) Validate() trace.ITrace {
 	return nil
 }

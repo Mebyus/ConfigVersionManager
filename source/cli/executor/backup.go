@@ -21,6 +21,10 @@ func NewBackupExecutor() *BackupExecutor {
 	}
 }
 
+func (executor *BackupExecutor) ShortHelp() string {
+	return "short help for " + executor.Name + " command"
+}
+
 func (executor *BackupExecutor) Validate() trace.ITrace {
 	return nil
 }

@@ -21,6 +21,10 @@ func NewMergeExecutor() *MergeExecutor {
 	}
 }
 
+func (executor *MergeExecutor) ShortHelp() string {
+	return "short help for " + executor.Name + " command"
+}
+
 func (executor *MergeExecutor) Validate() trace.ITrace {
 	return nil
 }

@@ -12,6 +12,7 @@ type IExecutor interface {
 	Load(command *command.Command)
 	Validate() trace.ITrace
 	Execute() trace.ITrace
+	ShortHelp() string
 	ChangeEtraceFactory(factory trace.IErrorTraceFactory)
 	ChangeLogger(logger log.ILogger)
 }

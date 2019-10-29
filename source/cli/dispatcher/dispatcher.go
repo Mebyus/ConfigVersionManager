@@ -9,14 +9,14 @@ import (
 )
 
 type Dispatcher struct {
-	pool          []IExecutor
+	Pool          []IExecutor
 	etraceFactory trace.IErrorTraceFactory
 	logger        log.ILogger
 }
 
 func NewDispatcher(logger log.ILogger, factory trace.IErrorTraceFactory) *Dispatcher {
 	return &Dispatcher{
-		pool:          make([]IExecutor, 0),
+		Pool:          make([]IExecutor, 0),
 		logger:        logger,
 		etraceFactory: factory,
 	}
@@ -30,19 +30,19 @@ func (dispatcher *Dispatcher) Register(executor IExecutor) {
 	executor.ChangeEtraceFactory(dispatcher.etraceFactory)
 	executor.ChangeLogger(dispatcher.logger)
 	executor.BecomeSlave(dispatcher)
-	dispatcher.pool = append(dispatcher.pool, executor)
+	dispatcher.Pool = append(dispatcher.Pool, executor)
 }
 
 func (dispatcher *Dispatcher) ChangeEtraceFactory(etraceFactory trace.IErrorTraceFactory) {
 	dispatcher.etraceFactory = etraceFactory
-	for _, executor := range dispatcher.pool {
+	for _, executor := range dispatcher.Pool {
 		executor.ChangeEtraceFactory(etraceFactory)
 	}
 }
 
 func (dispatcher *Dispatcher) ChangeLogger(logger log.ILogger) {
 	dispatcher.logger = logger
-	for _, executor := range dispatcher.pool {
+	for _, executor := range dispatcher.Pool {
 		executor.ChangeLogger(logger)
 	}
 }
@@ -82,7 +82,7 @@ func (dispatcher *Dispatcher) Dispatch(command *command.Command) {
 }
 
 func (dispatcher *Dispatcher) search(name string) IExecutor {
-	for _, executor := range dispatcher.pool {
+	for _, executor := range dispatcher.Pool {
 		if executor.Match(name) {
 			return executor
 		}

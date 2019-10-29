@@ -23,5 +23,7 @@ func main() {
 	dispatcher.Register(executor.NewMergeExecutor())
 	dispatcher.Register(executor.NewScriptExecutor())
 	dispatcher.Register(executor.NewDebugExecutor())
+	dispatcher.Register(executor.NewHelpExecutor())
+	dispatcher.Register(executor.NewSignExecutor())
 	dispatcher.Dispatch(command)
 }
